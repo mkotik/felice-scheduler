@@ -1,30 +1,69 @@
 import { AgGridReact } from "ag-grid-react";
-
+import "ag-grid-enterprise";
 import "ag-grid-community/styles/ag-grid.css"; // Core grid CSS, always needed
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { connect } from "react-redux";
+import { AppState, Record } from "../types";
 
-const ScheduleGrid: React.FC = () => {
+const ScheduleGrid: React.FC<{ data: Record[] }> = ({ data }) => {
+  console.log(data);
   // Define column definitions and row data
   const columnDefs = [
-    { headerName: "Name", field: "name" },
-    { headerName: "Age", field: "age" },
-    { headerName: "City", field: "city" },
+    { field: "date", filter: true },
+    { field: "property", filter: true },
+    { field: "service", filter: true },
+    { field: "cleaner", filter: true },
+    { field: "cost", filter: true },
+    { field: "arrival", filter: true },
+    { field: "key", filter: true },
+    { field: "ownerStay", filter: true },
   ];
 
   const rowData = [
-    { name: "John", age: 25, city: "New York" },
-    { name: "Jane", age: 28, city: "Los Angeles" },
-    { name: "Mark", age: 30, city: "San Francisco" },
+    {
+      date: "4/24/23",
+      property: "438 Capri Court",
+      service: "Regular Cleaning",
+      cleaner: "Wendy",
+      arrival: "4/27/23",
+      key: "693",
+      ownerStay: "",
+    },
+    {
+      date: "4/24/23",
+      property: "921 Tulip Court",
+      service: "Regular Cleaning",
+      cleaner: "Thomas",
+      arrival: "SHUT WATER",
+      key: "968",
+      ownerStay: "",
+    },
+    {
+      date: "4/27/23",
+      property: "670 West Palm Ave",
+      service: "Deep Cleaning",
+      cleaner: "Wendy",
+      arrival: "4/27/23",
+      key: "874",
+      ownerStay: "",
+    },
   ];
 
   return (
     <div
-      className="ag-theme-alpine"
-      style={{ height: "200px", width: "600px" }}
+      className="ag-grid ag-theme-alpine"
+      style={{ height: "90vh", width: "100%" }}
     >
-      <AgGridReact columnDefs={columnDefs} rowData={rowData} />
+      <AgGridReact columnDefs={columnDefs} rowData={data} />
     </div>
   );
 };
 
-export default ScheduleGrid;
+const mapStateToProps = (state: AppState) => ({
+  data: state.data,
+});
+
+//@ts-ignore
+export default connect(mapStateToProps, null, null, { pure: false })(
+  ScheduleGrid
+);
