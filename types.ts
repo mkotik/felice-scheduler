@@ -6,6 +6,7 @@ export interface Record {
   service: string;
   cleaner: string;
   arrival: string | Dayjs;
+  departure: string | Dayjs;
   key: string;
   ownerStay: string;
   cost: string;

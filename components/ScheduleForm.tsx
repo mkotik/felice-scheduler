@@ -10,7 +10,7 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { properties } from "../sampleData";
 import { Property } from "../types";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 interface ScheduleFormProps {
   addRecord: (record: Record) => {
@@ -24,7 +24,8 @@ const initialFormDataState = {
   property: "",
   service: "",
   cleaner: "",
-  arrival: dayjs(new Date()),
+  arrival: new Intl.DateTimeFormat("en-US").format(new Date()),
+  departure: new Intl.DateTimeFormat("en-US").format(new Date()),
   key: "",
   ownerStay: "",
   cost: "",
@@ -66,9 +67,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
     }
   };
 
-  const handleDateChange = (date: string) => {
-    setFormData({ ...formData, arrival: date });
-  };
+  // const handleDateChange = (date: string) => {
+  //   setFormData({ ...formData, arrival: date });
+  // };
 
   useEffect(() => {
     console.log(formData);
@@ -118,8 +119,24 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
       <DatePicker
         sx={{ marginBottom: 2, width: 300 }}
         label="Arrival Date"
-        onChange={handleDateChange}
-        value={formData.arrival}
+        onChange={(date: Dayjs) =>
+          setFormData({
+            ...formData,
+            arrival: date.locale("en").format("M/D/YYYY"),
+          })
+        }
+        value={dayjs(formData.arrival)}
+      />
+      <DatePicker
+        sx={{ marginBottom: 2, width: 300 }}
+        label="Departure Date"
+        onChange={(date: Dayjs) =>
+          setFormData({
+            ...formData,
+            departure: date.locale("en").format("M/D/YYYY"),
+          })
+        }
+        value={dayjs(formData.departure)}
       />
       <Button
         variant="contained"

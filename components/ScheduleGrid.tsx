@@ -15,6 +15,7 @@ const ScheduleGrid: React.FC<{ data: Record[] }> = ({ data }) => {
     { field: "cleaner", filter: true },
     { field: "cost", filter: true },
     { field: "arrival", filter: true },
+    { field: "departure", filter: true },
     { field: "key", filter: true },
     { field: "ownerStay", filter: true },
   ];
