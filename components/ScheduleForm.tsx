@@ -41,7 +41,7 @@ const initialFormDataState: Record = {
 const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
   const [shutWaterEnabled, setShutWaterEnabled] = useState<boolean>(false);
   const [formData, setFormData] = useState<Record>(initialFormDataState);
-  const handleClick = () => {
+  const handleSubmit = () => {
     console.log(formData);
     if (formData == initialFormDataState || !formData.property) return;
     if (shutWaterEnabled) {
@@ -52,6 +52,8 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
     } else {
       addRecord(formData);
     }
+    setShutWaterEnabled(false);
+    setFormData(initialFormDataState);
   };
 
   const handlePropertyChange = (
@@ -132,6 +134,9 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
         options={properties}
         sx={{ marginBottom: 2, width: 300 }}
         // freeSolo
+        value={
+          properties.find((prop) => prop.name === formData.property) || null
+        }
         renderInput={(params) => <TextField {...params} label="Property" />}
         renderOption={(props, option, { inputValue }) => {
           const matches = match(option.label, inputValue, {
@@ -177,6 +182,7 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
           control={<Checkbox />}
           label="Shut Water"
           onChange={handleShutWaterChange}
+          checked={shutWaterEnabled}
         />
       </Box>
       <DatePicker
@@ -195,11 +201,12 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
         control={<Checkbox />}
         label="Owner Stay"
         onChange={handleOwnerStay}
+        checked={formData.ownerStay ? true : false}
       />
       <Box>
         <Button
           variant="contained"
-          onClick={handleClick}
+          onClick={handleSubmit}
           sx={{ width: 150, marginBottom: 2 }}
         >
           Add Record
