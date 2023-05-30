@@ -16,7 +16,7 @@
     "@types/autosuggest-highlight": "^3.2.0",
     "@types/redux-logger": "^3.0.9",
     "ag-grid-community": "^29.3.2",
-    "ag-grid-enterprise": "^29.3.3",
+    "ag-grid-enterprise": "29.3.2",
     "ag-grid-react": "^29.3.2",
     "autosuggest-highlight": "^3.3.4",
     "dayjs": "^1.11.7",

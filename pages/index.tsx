@@ -1,10 +1,15 @@
 import type { NextPage } from "next";
+import { useRef } from "react";
 import Head from "next/head";
+import { AgGridReact } from "ag-grid-react";
+import { Record } from "../types";
 import ScheduleGrid from "../components/ScheduleGrid";
 import ScheduleForm from "../components/ScheduleForm";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const gridRef = useRef<AgGridReact<Record>>(null);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,8 +18,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <ScheduleForm />
-        <ScheduleGrid />
+        <ScheduleForm gridRef={gridRef} />
+        <ScheduleGrid gridRef={gridRef} />
       </main>
       <footer className={styles.footer}>
         <span className={styles.logo}>Copyright 2023</span>
@@ -23,4 +28,5 @@ const Home: NextPage = () => {
   );
 };
 
+Home.displayName = "Home";
 export default Home;

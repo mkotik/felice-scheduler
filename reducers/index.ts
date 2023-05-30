@@ -6,37 +6,46 @@ interface ReducerAction extends Action {
   payload: Record;
 }
 
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "2-digit",
+});
+
 const initialState: AppState = {
   data: [
     {
-      date: "4/24/23",
+      date: dateFormatter.format(new Date()),
       property: "438 Capri Court",
       service: "Regular Cleaning",
       cleaner: "Wendy",
       arrival: "4/27/23",
-      key: "693",
+      departure: "4/29/23",
+      key: "4280",
       ownerStay: "",
-      cost: "0",
+      cost: "375",
     },
     {
-      date: "4/24/23",
+      date: dateFormatter.format(new Date()),
       property: "921 Tulip Court",
-      service: "Regular Cleaning",
-      cleaner: "Thomas",
       arrival: "SHUT WATER",
-      key: "968",
+      departure: "",
       ownerStay: "",
-      cost: "0",
+      cleaner: "Wendy",
+      service: "Light Cleaning",
+      cost: "350",
+      key: "9832",
     },
     {
-      date: "4/27/23",
+      date: dateFormatter.format(new Date()),
       property: "670 West Palm Ave",
-      service: "Deep Cleaning",
-      cleaner: "Wendy",
+      service: "Light Cleaning",
+      cleaner: "Thomas",
       arrival: "4/27/23",
-      key: "874",
-      ownerStay: "",
-      cost: "0",
+      departure: "5/1/23",
+      ownerStay: "OWNER STAY",
+      cost: "350",
+      key: "0011",
     },
   ],
 };

@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { addRecord } from "../actions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
 import Autocomplete from "@mui/material/Autocomplete";
 import DatePicker from "./DatePicker";
 import { Record } from "../types";
@@ -11,15 +12,22 @@ import match from "autosuggest-highlight/match";
 import { properties } from "../sampleData";
 import { Property } from "../types";
 import dayjs, { Dayjs } from "dayjs";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import { AgGridReact } from "ag-grid-react";
+import { RefObject } from "react";
+import { getUniqueColumnValues } from "../utils";
 
 interface ScheduleFormProps {
   addRecord: (record: Record) => {
     type: string;
     payload: Record;
   };
+
+  gridRef: RefObject<AgGridReact<Record>>;
 }
 
-const initialFormDataState = {
+const initialFormDataState: Record = {
   date: "",
   property: "",
   service: "",
@@ -30,12 +38,20 @@ const initialFormDataState = {
   ownerStay: "",
   cost: "",
 };
-const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
+const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord, gridRef }) => {
+  const [shutWaterEnabled, setShutWaterEnabled] = useState<boolean>(false);
   const [formData, setFormData] = useState<Record>(initialFormDataState);
   const handleClick = () => {
     console.log(formData);
     if (formData == initialFormDataState || !formData.property) return;
-    addRecord(formData);
+    if (shutWaterEnabled) {
+      const newFormData = { ...formData };
+      newFormData.arrival = "Shut Water";
+      newFormData.departure = "";
+      addRecord(newFormData);
+    } else {
+      addRecord(formData);
+    }
   };
 
   const handlePropertyChange = (
@@ -52,7 +68,6 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
       newFormData.cleaner = property.cleaner;
       newFormData.key = property.key;
       newFormData.date = formattedDate;
-      newFormData.ownerStay = "";
       setFormData(newFormData);
     } else {
       setFormData({
@@ -67,14 +82,41 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
     }
   };
 
-  // const handleDateChange = (date: string) => {
-  //   setFormData({ ...formData, arrival: date });
-  // };
-
   useEffect(() => {
     console.log(formData);
   }, [formData]);
 
+  const handleShutWaterChange = (e: React.SyntheticEvent) => {
+    const event = e as React.ChangeEvent<HTMLInputElement>;
+    setShutWaterEnabled(event.target.checked);
+  };
+
+  const handleOwnerStay = (e: React.SyntheticEvent) => {
+    const event = e as React.ChangeEvent<HTMLInputElement>;
+    setFormData({
+      ...formData,
+      ownerStay: event.target.checked ? "OWNER STAY" : "",
+    });
+  };
+
+  const handleExportCleaners = () => {
+    if (gridRef.current) {
+      const cleaners = Array.from(getUniqueColumnValues("cleaner", gridRef));
+      cleaners.forEach((cleaner) => {
+        const params = {
+          fileName: `${cleaner}-${new Date().toISOString().slice(0, 10)}`,
+        };
+        const filterModel = {
+          cleaner: { filterType: "set", values: [cleaner] },
+        };
+        if (gridRef.current) {
+          gridRef.current.api.setFilterModel(filterModel);
+          gridRef.current.api.exportDataAsExcel(params);
+        }
+      });
+      gridRef.current.api.setFilterModel({});
+    }
+  };
   return (
     <div
       style={{
@@ -116,17 +158,27 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
         }}
       />
 
-      <DatePicker
-        sx={{ marginBottom: 2, width: 300 }}
-        label="Arrival Date"
-        onChange={(date: Dayjs) =>
-          setFormData({
-            ...formData,
-            arrival: date.locale("en").format("M/D/YYYY"),
-          })
-        }
-        value={dayjs(formData.arrival)}
-      />
+      <Box sx={{ display: "flex" }}>
+        <DatePicker
+          sx={{ marginBottom: 2, width: 300, marginRight: "20px" }}
+          label="Arrival Date"
+          onChange={(date: Dayjs) =>
+            setFormData({
+              ...formData,
+              arrival: date.locale("en").format("M/D/YYYY"),
+            })
+          }
+          disabled={shutWaterEnabled}
+          value={dayjs(formData.arrival)}
+        />
+        <p>Or</p>
+        <FormControlLabel
+          sx={{ marginLeft: "20px", marginBottom: "20px" }}
+          control={<Checkbox />}
+          label="Shut Water"
+          onChange={handleShutWaterChange}
+        />
+      </Box>
       <DatePicker
         sx={{ marginBottom: 2, width: 300 }}
         label="Departure Date"
@@ -136,15 +188,30 @@ const ScheduleForm: React.FC<ScheduleFormProps> = ({ addRecord }) => {
             departure: date.locale("en").format("M/D/YYYY"),
           })
         }
+        disabled={shutWaterEnabled}
         value={dayjs(formData.departure)}
       />
-      <Button
-        variant="contained"
-        onClick={handleClick}
-        sx={{ width: 150, marginBottom: 2 }}
-      >
-        Add Record
-      </Button>
+      <FormControlLabel
+        control={<Checkbox />}
+        label="Owner Stay"
+        onChange={handleOwnerStay}
+      />
+      <Box>
+        <Button
+          variant="contained"
+          onClick={handleClick}
+          sx={{ width: 150, marginBottom: 2 }}
+        >
+          Add Record
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleExportCleaners}
+          sx={{ width: 200, marginBottom: 2, marginLeft: 2 }}
+        >
+          Export Cleaners
+        </Button>
+      </Box>
     </div>
   );
 };

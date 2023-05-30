@@ -8,7 +8,7 @@ export interface Record {
   arrival: string | Dayjs;
   departure: string | Dayjs;
   key: string;
-  ownerStay: string;
+  ownerStay: "OWNER STAY" | "";
   cost: string;
 }
 

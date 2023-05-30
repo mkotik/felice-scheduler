@@ -19,7 +19,7 @@ export const properties: Property[] = [
   {
     label: "670 West Palm Avenue",
     name: "670 West Palm Avenue",
-    cleaner: "Wendy",
+    cleaner: "Thomas",
     service: "Light Cleaning",
     cost: "350",
     key: "0011",
